@@ -1,0 +1,34 @@
+<h1>Lista de productos</h1>
+{{#if username}}
+    <p>Bienvenido, {{username}}! Tu rol es {{role}}</p>
+    <form action="/user/logout" method="POST">
+        <button type="submit">Logout</button>
+    </form>
+{{/if}}
+<div>
+    {{#each payload}}
+        <div class="card">
+            <h3> {{this.title}} </h3>
+            <p> {{this.description}} </p>
+            <p> {{this.category}} </p>
+            <p> {{this.code}} </p>
+            <p> {{this.price}} </p>
+            <button type="button" href=""> Agregar al carrito </button>
+        </div>
+    {{/each}}
+</div>
+
+{{!-- preguntamos si tiene alguna página previa --}}
+{{#if hasPrevPage}}
+    <a href="/products?page={{prevPage}}&limit={{limit}}"> Anterior </a>
+{{/if}}
+
+{{!-- preguntamos si tiene alguna página siguiente --}}
+{{#if hasNextPage}}
+    <a href="/products?page={{nextPage}}&limit={{limit}}"> Siguiente </a>
+{{/if}}
+
+{{!-- indicador de páginas --}}
+<p>Pagina {{page}} de {{totalPages}} </p>
+
+<script src="js/main.js"></script>

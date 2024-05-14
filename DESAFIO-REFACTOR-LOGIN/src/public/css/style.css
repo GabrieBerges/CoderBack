@@ -1,0 +1,61 @@
+h1 {
+    color:rgb(19, 9, 63);
+    text-align: center;
+}
+
+h2 {
+    color: rgb(5, 67, 5);
+}
+h5 {
+    color: rgb(6, 9, 55);
+}
+
+p {
+    color: rgb(39, 44, 118);
+}
+
+.contenedor {
+    border: 2px solid black;
+    padding: 20px;
+    margin: 10px;
+    width: 300px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+}
+
+.inputChat {
+    width: 250px;
+}
+
+.card {
+    border: 2px solid black;
+    padding: 20px;
+    margin: 10px;
+    width: 300px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+}
+
+.form {
+    border: 2px solid black;
+    padding: 20px;
+    margin: 10px;
+    width: 300px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+}
+
+input, select {
+    margin: 5px;
+    padding: 5px;
+    width: 90%;
+}
+
+button {
+    background-color: #4577dc;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
