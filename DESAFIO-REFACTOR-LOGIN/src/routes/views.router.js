@@ -8,8 +8,8 @@ const cartModel = require("../models/cart.model.js");
 const productManager = new ProductManager ("./src/models/products.json");
 
 const checkSession = (req, res, next) => {
-    console.log("en checksession");
-    console.log(req.session.user);
+    // console.log("en checksession");
+    // console.log(req.session.user);
     if (req.session.user) {
         next();
     } else {
@@ -19,7 +19,7 @@ const checkSession = (req, res, next) => {
 
 router.get('/', async (req, res) => {
     try {
-        console.log("/");
+        // console.log("/");
         if (req.session.user)
         {
             return res.redirect('/products');
@@ -55,11 +55,11 @@ router.get("/chat", (req, res) => {
 
 
 router.get("/products", checkSession, async (req, res) => {
-    console.log("en /products");
+    // console.log("en /products");
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 2;
     const { username, role } = req.session.user;
-    console.log(req.session.user);
+    // console.log(req.session.user);
 
     try {
         const products = await ProductModel.paginate({}, {page, limit});
@@ -103,8 +103,8 @@ router.get("/carts/:cid", async (req, res) => {
             product: item.product.toObject(),
             quantity: item.quantity
         }))
-        console.log("products");
-        console.log(products);
+        // console.log("products");
+        // console.log(products);
 
         res.render("cart", {products});
         // res.status(201).json(cart);
