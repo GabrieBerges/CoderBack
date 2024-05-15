@@ -12,6 +12,5 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 const UserModel = mongoose.model('users', userSchema);
-// const UserModel = mongoose.model('User', userSchema); //bd del jefecito
 
 module.exports = UserModel;
