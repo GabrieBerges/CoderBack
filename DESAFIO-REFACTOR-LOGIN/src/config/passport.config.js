@@ -58,13 +58,13 @@ const initializePassport = () => {
     passport.use("login", new LocalStrategy({
         usernameField: "username"
     }, async (username, password, done) => {
-        console.log("username: " + username);
-        console.log("password: " + password);
+        // console.log("username: " + username);
+        // console.log("password: " + password);
         try {
             
             //Verifico si existe un usuario con ese email: 
             let user = await UsuarioModel.findOne({ username });
-            console.log(user);
+            // console.log(user);
             if (!user) {
                 console.log("Este usuario no existe");
                 return done(null, false, { message: "Usuario no encontrado" });
@@ -74,7 +74,7 @@ const initializePassport = () => {
             if (!isValidPassword(password, user)) {
                 return done(null, false, { message: "Contraseña incorrecta" });
             }
-            console.log("antes del done");
+            // console.log("antes del done");
             return done(null, user);
 
 
@@ -94,14 +94,14 @@ const initializePassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         
         //Veo los datos del perfil
-        console.log("Profile:", profile);
+        // console.log("Profile:", profile);
 
         try {
             let user = await UsuarioModel.findOne({ username: profile._json.login });
-            console.log("user:", user);
+            // console.log("user:", user);
             if (!user) {
                 console.log("hay que crear uno nuevo");
-                console.log("login: " + profile._json.login);
+                // console.log("login: " + profile._json.login);
                 let newUser = {
                     username: profile._json.login,
                     password: "git", //si dejaba la contraseña vacía, comprometía la consistencia de la bd, por eso preferí no quitar el requerido en el modelo
