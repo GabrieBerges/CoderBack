@@ -58,7 +58,8 @@ router.get("/products", checkSession, async (req, res) => {
     console.log("en /products");
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 2;
-    const { username, role } = req.session;
+    const { username, role } = req.session.user;
+    console.log(req.session.user);
 
     try {
         const products = await ProductModel.paginate({}, {page, limit});
@@ -67,7 +68,7 @@ router.get("/products", checkSession, async (req, res) => {
             const {_id, ...rest} = product.toObject();
             return rest;
         })
-        console.log(products);
+        // console.log(products);
 
         res.render("products", {
             status: 200,
