@@ -19,11 +19,11 @@ router.post('/register', passport.authenticate('register', {
 router.post("/login", passport.authenticate("login", {
     failureRedirect: "/?error=Usuario o contraseña invalido"
 }), async (req, res) => {
-    console.log("en user/login");
+    // console.log("en user/login");
     if (!req.user) {
         return res.status(400).send("Credenciales invalidas");
     }
-    console.log(req.user);
+    // console.log(req.user);
     req.session.user = {
         username: req.user.username,
         password: req.user.password,
@@ -32,8 +32,8 @@ router.post("/login", passport.authenticate("login", {
     
     req.session.login = true;
     
-    console.log(req.session.user);
-    console.log(req.session.login);
+    // console.log(req.session.user);
+    // console.log(req.session.login);
     res.redirect("/products");
     
 })
