@@ -31,18 +31,25 @@ const initializePassport = () => {
             if (user) {
                 return done(null, false, { message: "El usuario ya existe" });
             }
-
+            rol = "usuario"
+            // defino el rol admin para el usuario adminCoder@coder.com
+            if (username === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+                console.log("defino el rol admin para el usuario adminCoder@coder.com");
+                role = 'admin';
+            }
+            
             //Si no existe voy a crear un registro de usuario nuevo: 
-
             let newUser = {
                 username,
-                password: createHash(password)
+                password: createHash(password),
+                role 
             }
 
             let result = await UsuarioModel.create(newUser);
             return done(null, result);
             //Si todo resulta bien, podemos mandar done con el usuario generado. 
         } catch (error) {
+            console.log(error);
             return done(error);
         }
     }))
@@ -54,7 +61,8 @@ const initializePassport = () => {
         console.log("username: " + username);
         console.log("password: " + password);
         try {
-            //Primero verifico si existe un usuario con ese email: 
+            
+            //Verifico si existe un usuario con ese email: 
             let user = await UsuarioModel.findOne({ username });
             console.log(user);
             if (!user) {
@@ -75,6 +83,44 @@ const initializePassport = () => {
             return done(error);
         }
     }))
+    
+    //2) primero se configura la aplicación en git y se instala npm i passport-github2
+    // Acá generamos la nueva estrategia con GitHub: 
+
+    passport.use("github", new GitHubStrategy({
+        clientID: "Iv23lipq04I5sWMzbP2m",
+        clientSecret: "8022e2ac10921d68752566b9b71f8c295d8f79af",
+        callbackURL: "http://localhost:8080/user/githubcallback"
+    }, async (accessToken, refreshToken, profile, done) => {
+        
+        //Veo los datos del perfil
+        console.log("Profile:", profile);
+
+        try {
+            let user = await UsuarioModel.findOne({ username: profile._json.login });
+            console.log("user:", user);
+            if (!user) {
+                console.log("hay que crear uno nuevo");
+                console.log("login: " + profile._json.login);
+                let newUser = {
+                    username: profile._json.login,
+                    password: "git", //si dejaba la contraseña vacía, comprometía la consistencia de la bd, por eso preferí no quitar el requerido en el modelo
+                    role: "usuario"
+                }
+                console.log(newUser);
+
+                let result = await UsuarioModel.create(newUser);
+                console.log("hasta acá no llega");
+                done(null, result);
+            } else {
+                done(null, user);
+            }
+        } catch (error) {
+            console.log("en catch del passport git");
+            console.log(error);
+            return done(error);
+        }
+    }))
 
     //Serializar y deserializar: 
 
@@ -87,36 +133,6 @@ const initializePassport = () => {
         done(null, user);
     })
 
-    //2) primero se configura la aplicación en git y se instala npm i passport-github2
-    // Acá generamos la nueva estrategia con GitHub: 
-
-    passport.use("github", new GitHubStrategy({
-        clientID: "Iv23lipq04I5sWMzbP2m",
-        clientSecret: "8022e2ac10921d68752566b9b71f8c295d8f79af",
-        callbackURL: "http://localhost:8080/api/sessions/githubcallback"
-    }, async (accessToken, refreshToken, profile, done) => {
-        //Veo los datos del perfil
-        console.log("Profile:", profile);
-
-        try {
-            let user = await UsuarioModel.findOne({ username: profile._json.username });
-
-            if (!user) {
-                let newUser = {
-                    username: profile._json.username,
-                    password: "",
-                    role: "usuario"
-                }
-
-                let result = await UsuarioModel.create(newUser);
-                done(null, result);
-            } else {
-                done(null, user);
-            }
-        } catch (error) {
-            return done(error);
-        }
-    }))
 }
 
 module.exports = initializePassport;
