@@ -31,7 +31,7 @@ const initializePassport = () => {
             if (user) {
                 return done(null, false, { message: "El usuario ya existe" });
             }
-            rol = "usuario"
+            role = "usuario"
             // defino el rol admin para el usuario adminCoder@coder.com
             if (username === 'adminCoder@coder.com' && password === 'adminCod3r123') {
                 console.log("defino el rol admin para el usuario adminCoder@coder.com");
