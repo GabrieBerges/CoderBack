@@ -29,7 +29,7 @@ class CartRepository {
     async deleteProductFromCart(cid, pid) {
         try {
             const carrito = await this.getCartById(cid);
-            const existeProdIndex = carrito.products.findIndex(item => item.product.toString() === pid);
+            const existeProdIndex = carrito.products.findIndex(item => item.product._id.toString() === pid);
 
             if (existeProdIndex != -1) {
                 carrito.products.splice(existeProdIndex, 1);
