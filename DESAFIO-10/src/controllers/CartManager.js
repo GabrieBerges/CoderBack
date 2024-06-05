@@ -37,7 +37,6 @@ class CartManager {
       }
 
       carrito.markModified("products");
-      // return await carrito.save();
       return await CartService.updateCart(carrito);
     } catch (error) {
       console.error("Error al agregar producto al carrito ", error);
@@ -63,7 +62,7 @@ class CartManager {
   async updateProductCart(cid, pid, quantity = 1) {
     try {
       const carrito = await CartService.getCartById(cid);
-      console.log("carrito: ", carrito);
+
       const existeProd = carrito.products.find(item => item.product._id.toString() === pid);
 
       if (existeProd) {
@@ -91,11 +90,10 @@ class CartManager {
     }
   }
 
-  // let cart = await CartModel.findById(cId).populate("products.product");
   async handleGetCartById(req, res) {
     const cId = req.params.cid;
     try {
-      let cart = await CartService.getCartById(cId);//.populate("products.product");
+      let cart = await CartService.getCartById(cId);
       const products = cart.products.map(item => ({
         product: item.product.toObject(),
         quantity: item.quantity
