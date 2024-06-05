@@ -7,6 +7,7 @@ const ProductModel = require("../models/product.model.js");
 const cartModel = require("../models/cart.model.js");
 const productManager = new ProductManager ("./src/models/products.json");
 
+// Middleware para chequear la session
 const checkSession = (req, res, next) => {
     console.log("en checksession");
     console.log(req.session.user);
@@ -17,6 +18,7 @@ const checkSession = (req, res, next) => {
     }
 };
 
+// Ruta inicial, redirige a la ruta /products de este mismo archivo
 router.get('/', async (req, res) => {
     try {
         console.log("/");
@@ -31,6 +33,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Ruta para el registro
 router.get('/register', (req, res) => {
     try {
         console.log("/register");
@@ -43,7 +46,7 @@ router.get('/register', (req, res) => {
     }
 });
 
-
+// Ruta para actividad de socket.io
 router.get("/realtimeproducts", async (req, res) => {
     try {
         res.render("realTimeProducts");
@@ -52,13 +55,13 @@ router.get("/realtimeproducts", async (req, res) => {
     }
 })
 
-
+// Ruta para el chat
 router.get("/chat", (req, res) => {
     res.render("chat");
 })
 
 
-// router.get('/products', checkSession, ProductManager.getProducts);
+// Ruta para el paginado de productos (vista después del login)
 router.get('/products', checkSession, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 2;
