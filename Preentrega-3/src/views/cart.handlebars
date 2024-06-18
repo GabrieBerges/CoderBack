@@ -1,0 +1,31 @@
+<h1>Productos de tu carrito</h1>
+{{#if email}}
+    <p>Bienvenido, {{email}}!</p>
+{{/if}}
+<form action="/products" class="form" method="GET">
+    <button type="submit">Volver a Productos</button>
+    {{!-- <button onclick="history.back()">Productos</button> --}}
+</form>
+<div>
+    {{#each products}}
+        <div class="card">
+            <h3> {{this.product.title}} </h3>
+            <p> {{this.product.description}} </p>
+            <p> Categoría: {{this.product.category}} </p>
+            <p> Código: {{this.product.code}} </p>
+            <p> Cantidad: {{this.quantity}} </p>
+            <p> Valor: {{this.product.price}} </p>
+            <form action="" method="POST">
+                <!-- Botón para eliminar del carrito -->
+                <button type="submit">Eliminar del carrito</button>
+            </form>
+        </div>
+    {{/each}}
+</div>
+<br>
+<form action="/api/carts/{{cId}}/purchase" method="GET">
+    <input type="hidden" name="email" value="{{email}}">
+    <button type="submit">COMPRAR</button>
+</form>
+
+<script src="js/main.js"></script>
