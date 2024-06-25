@@ -7,21 +7,18 @@ const UserDTO = require("../dto/user.dto.js");
 //Perfil: 
 router.get("/current", (req, res) => {
     try {
-        console.log(req.session.user);
-        if (req.session.user)
-        {
+        console.log("en api/sessions/current");
+        if (req.session.user) {
             const usuario = req.session.user;
             console.log(usuario);
-            const userDto = new UserDTO(usuario); // Creamos una instancia del DTO con los datos del usuario
-            res.send(userDto);
-
-        // res.redirect("/products")
-        }
-        else {
-            return res.send({usuario: "Debe acceder a una cuenta primero"});
+            const userDto = new UserDTO(usuario); 
+            console.log("userDTO: ", userDto);
+            return res.json(userDto);
+        } else {
+            return res.status(401).json({usuario: "Debe acceder a una cuenta primero"}); 
         }
     } catch (error) {
-        res.status(500).json({error: "Error interno del servidor"})
+        return res.status(500).json({error: "Error interno del servidor"});
     }
 })
 

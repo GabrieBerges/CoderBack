@@ -1,4 +1,4 @@
-const UserModel = require('../models/user.model.js');
+const UserModel = require('../dao/models/user.model.js');
 
 class UserRepository {
     async createUser(datosUser) {

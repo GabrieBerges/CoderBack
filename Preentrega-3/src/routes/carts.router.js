@@ -1,8 +1,8 @@
 
 const express = require("express");
 const router = express.Router();
-const CartManager = require("../controllers/CartManager.js");
-const TicketManager = require("../controllers/TicketManager.js");
+const CartManager = require("../dao/controllers/CartManager.js");
+const TicketManager = require("../dao/controllers/TicketManager.js");
 
 const cartManager = new CartManager();
 const ticketManager = new TicketManager();

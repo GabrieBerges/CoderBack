@@ -2,24 +2,13 @@ const express = require("express");
 const router = express.Router();
 require("../database.js");
 
-const ProductManager = require("../controllers/ProductManager.js");
-const ProductModel = require("../models/product.model.js");
-const cartModel = require("../models/cart.model.js");
-const productManager = new ProductManager ("./src/models/products.json");
+const ProductManager = require("../dao/controllers/ProductManager.js");
+const ProductModel = require("../dao/models/product.model.js");
+const cartModel = require("../dao/models/cart.model.js");
+const productManager = new ProductManager ("./src/dao/models/products.json");
 
-// Middleware para chequear la session
-const checkSession = (req, res, next) => {
-    console.log("en checksession");
-    console.log(req.session.user);
-    if (req.session.user) {
-        if(req.session.user.role === "admin") {
-            res.redirect('/realtimeproducts');
-        };
-        next();
-    } else {
-        res.redirect('/');
-    }
-};
+// Middleware que trabaja en conjunto con la estrategia “current” 
+const { checkSession } = require("../middleware/current-session.js"); 
 
 // Ruta inicial, redirige a la ruta /products de este mismo archivo
 router.get('/', async (req, res) => {
@@ -50,7 +39,7 @@ router.get('/register', (req, res) => {
 });
 
 // Ruta para actividad de socket.io
-router.get("/realtimeproducts", async (req, res) => {
+router.get("/realtimeproducts", checkSession, async (req, res) => {
     try {
         res.render("realTimeProducts", {
             name: req.session.user.first_name + " " + req.session.user.last_name,
@@ -64,7 +53,7 @@ router.get("/realtimeproducts", async (req, res) => {
 })
 
 // Ruta para el chat
-router.get("/chat", (req, res) => {
+router.get("/chat", checkSession, (req, res) => {
     res.render("chat");
 })
 
@@ -102,5 +91,6 @@ router.get('/products', checkSession, async (req, res) => {
     }
 });
 
+// router.use(checkAdmin); 
 
 module.exports = router;

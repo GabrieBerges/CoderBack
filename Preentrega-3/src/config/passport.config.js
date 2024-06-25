@@ -8,12 +8,12 @@ const local = require("passport-local"); //etsrategia elegida
 const GitHubStrategy = require("passport-github2");
 
 //1)Traemos el UsuarioModel y las funciones de bcryp: 
-const UsuarioModel = require("../models/user.model.js");
+const UsuarioModel = require("../dao/models/user.model.js");
 const { createHash, isValidPassword } = require("../utils/hashbcrypt.js");
 
 //necesitamos esto para crear el nuevo carrito al registrarse
-const CartManager = require("../controllers/CartManager.js");
-const cartManager = new CartManager("./src/models/carts.json");
+const CartManager = require("../dao/controllers/CartManager.js");
+const cartManager = new CartManager("./src/dao/models/carts.json");
 
 //para traer los valores del .env
 const configObject = require("./config.js");

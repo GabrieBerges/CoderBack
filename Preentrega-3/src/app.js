@@ -59,7 +59,7 @@ const io = new Server(httpServer);
 //para obtener el array de productos: 
 // const ProductManager = require("./controllers/ProductManager.js");
 // const productManager = new ProductManager("./src/models/products.json");
-const MessageModel = require("./models/messages.model.js")
+const MessageModel = require("./dao/models/messages.model.js")
 
 const { ProductService } = require("./services/index.js")
 

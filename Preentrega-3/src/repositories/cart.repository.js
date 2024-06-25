@@ -1,4 +1,4 @@
-const CartModel = require('../models/cart.model.js');
+const CartModel = require('../dao/models/cart.model.js');
 
 class CartRepository {
     async createCart() {

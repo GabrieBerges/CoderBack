@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
-const UserManager = require("../controllers/UserManager.js");
+const UserManager = require("../dao/controllers/UserManager.js");
 
 const userManager = new UserManager();
 
