@@ -1,13 +1,31 @@
 const ProductModel = require('../dao/models/product.model.js');
+const CustomError = require("../services/errors/custom-error.js");
+const EErrors = require("../services/errors/enum.js");
+const generarInfoError = require("../services/errors/info.js");
 
 class ProductRepository {
     async addProduct(productData) {
         try {
             console.log("productData: ", productData);
+            
+            console.log("productData.code: ", productData.code);
+            //primero nos aseguramos de que no exista el código
+            const result = await this.getProductByCode(productData.code);
+            console.log("result: ", result);
+
+            if (result) {
+                throw CustomError.crearError({
+                    nombre: "Producto nuevo con algún valor vacío o erróneo",
+                    causa: generarInfoError(productData),
+                    mensaje: "Ya existe el código : " + productData.code,
+                    codigo: EErrors.BD_ERROR
+                })
+            }
+
             const nuevoProducto = new ProductModel(productData);
             return await nuevoProducto.save();
         } catch (error) {
-            throw new Error("Error al agregar el nuevo producto");
+            return error;
         }
     }
 

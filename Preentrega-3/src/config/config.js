@@ -11,7 +11,7 @@ dotenv.config({
 const configObject = {
     mongo_url: process.env.MONGO_URL,
     session_secret: process.env.SESSION_SECRET,
-    port: process.env.PORT,
+    port: process.env.PORT || 8080,
     admin_user: process.env.ADMIN_USER,
     admin_password: process.env.ADMIN_PASSWORD, 
     git_client_id: process.env.GIT_CLIENT_ID, 

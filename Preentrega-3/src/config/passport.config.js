@@ -24,7 +24,7 @@ const LocalStrategy = local.Strategy;
 const initializePassport = () => {
 //Vamos a armar nuestras estrategias: Registro y Login. 
 
-     passport.use("register", new LocalStrategy({
+    passport.use("register", new LocalStrategy({
         //Le digo que quiero acceder al objeto request
         passReqToCallback: true,
         usernameField: "email"
@@ -111,7 +111,7 @@ const initializePassport = () => {
     passport.use("github", new GitHubStrategy({
         clientID: configObject.git_client_id,
         clientSecret: configObject.git_client_secret,
-        callbackURL: configObject.git
+        callbackURL: configObject.git_callback_url
     }, async (accessToken, refreshToken, profile, done) => {
         
         //Veo los datos del perfil
