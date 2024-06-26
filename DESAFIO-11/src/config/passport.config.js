@@ -150,35 +150,6 @@ const initializePassport = () => {
         }
     }))
 
-    // //Agregamos la estrategia "current"
-    // passport.use("current", new LocalStrategy({
-    //     usernameField: "email"
-    // }, async (email, password, done) => {
-    //     console.log("email: " + email);
-    //     console.log("password: " + password);
-    //     try {
-    //         //Verifico si existe un usuario con ese email: 
-    //         let user = await UsuarioModel.findOne({ email });
-    //         console.log(user);
-    //         if (!user) {
-    //             console.log("Este usuario no existe");
-    //             return done(null, false, { message: "Usuario no encontrado" });
-    //         }
-
-    //         //Si existe verifico la contraseña: 
-    //         if (!isValidPassword(password, user)) {
-    //             return done(null, false, { message: "Contraseña incorrecta" });
-    //         }
-    //         console.log("antes del done");
-    //         return done(null, user);
-
-
-    //     } catch (error) {
-    //         console.log(error);
-    //         return done(error);
-    //     }
-    // }))
-
     //Serializar y deserializar: 
 
     passport.serializeUser((user, done) => {

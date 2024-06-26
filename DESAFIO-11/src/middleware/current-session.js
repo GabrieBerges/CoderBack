@@ -1,11 +1,8 @@
-const checkSession = (req, res, next) => {
+const checkSessionAdmin = (req, res, next) => {
     console.log("en checkSession");
     console.log(req.session.user);
     if (req.session.user) {
-        if (req.session.user.role === "admin" && (req.path === "/chat" || req.path === "/products")) {
-            return res.redirect('/realtimeproducts');
-        }
-        if (req.session.user.role === "usuario" && req.path === "/realtimeproducts") {
+        if (req.session.user.role === "usuario") {
             return res.redirect('/products');
         }
         next();
@@ -14,4 +11,18 @@ const checkSession = (req, res, next) => {
     }
 };
 
-module.exports = { checkSession };
+const checkSessionUser = (req, res, next) => {
+    console.log("en checkSessionUser");
+    console.log(req.session.user);
+    if (req.session.user) {
+        if (req.session.user.role === "admin") {
+            return res.redirect('/realtimeproducts');
+        }
+        next();
+    } else {
+        return res.redirect('/');
+    }
+};
+
+
+module.exports = { checkSessionAdmin, checkSessionUser };
