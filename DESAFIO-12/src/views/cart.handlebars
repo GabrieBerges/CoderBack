@@ -1,0 +1,52 @@
+<h1>Productos de tu carrito</h1>
+{{#if email}}
+    <p>Bienvenido, {{email}}!</p>
+{{/if}}
+<form action="/products" class="form" method="GET">
+    <button type="submit">Volver a Productos</button>
+    {{!-- <button onclick="history.back()">Productos</button> --}}
+</form>
+<div>
+    {{#each products}}
+        <div class="card">
+            <h3> {{this.product.title}} </h3>
+            <p> {{this.product.description}} </p>
+            <p> Categoría: {{this.product.category}} </p>
+            <p> Código: {{this.product.code}} </p>
+            <p> Cantidad: {{this.quantity}} </p>
+            <p> Valor: {{this.product.price}} </p>
+            <button onclick="deleteProduct('{{../cId}}', '{{this.product._id}}')">Eliminar del carrito</button>
+        </div>
+    {{/each}}
+</div>
+<br>
+<form action="/api/carts/{{cId}}/purchase" method="GET">
+    <input type="hidden" name="email" value="{{email}}">
+    <button type="submit">COMPRAR</button>
+</form>
+
+
+<script>
+    function deleteProduct(cId, pId) {
+        fetch(`/api/carts/${cId}/products/${pId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirecciona o actualiza la página después de eliminar el producto
+                window.location.reload();
+            } else {
+                alert('Error al eliminar el producto del carrito.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar el producto del carrito.');
+        });
+    }
+</script>
+
+<script src="js/main.js"></script>
