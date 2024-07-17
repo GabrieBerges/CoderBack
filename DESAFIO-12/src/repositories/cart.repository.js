@@ -1,5 +1,5 @@
 const CartModel = require('../dao/models/cart.model.js');
-const { logger } = require('../utils/config_logger');
+const { logger } = require('../utils/config_logger.js');
 
 class CartRepository {
     async createCart() {
@@ -31,9 +31,9 @@ class CartRepository {
         try {
             logger.info("en repository");
             const carrito = await this.getCartById(cid);
-            console.log("carrito: ", carrito);
+            logger.info(`carrito: ${JSON.stringify(carrito, null, 2)}`)
             const existeProdIndex = carrito.products.findIndex(item => item.product._id.toString() === pid);
-            console.log("existeProdIndex: ", existeProdIndex);
+            logger.info(`existeProdIndex: ${JSON.stringify(existeProdIndex, null, 2)}`)
 
             if (existeProdIndex != -1) {
                 carrito.products.splice(existeProdIndex, 1);
@@ -51,10 +51,10 @@ class CartRepository {
     async clearCart(cid) {
         try {
             const carrito = await this.getCartById(cid);
-            // console.log("2- carrito: ", carrito);
+
             carrito.products = [];
             carrito.markModified("products");
-            // console.log("3- carrito: ", carrito);
+
             return await carrito.save();
         } catch (error) {
             throw new Error("Error al vaciar el carrito: ", error);
@@ -63,16 +63,15 @@ class CartRepository {
 
     async replaceProductsCart(cid, body) {
         try {
-            console.log("en cartService - cid: ", cid);
-            console.log("en cartService - body: ", body);
+            logger.info(`en cartService - cid: ${JSON.stringify(cid, null, 2)}`)
+            logger.info(`en cartService - body: ${JSON.stringify(body, null, 2)}`)
             await this.clearCart(cid);
             for (const product of body) {
                 await this.addProductToCart(cid, product.product, product.quantity);
             }
             return await this.getCartById(cid);
         } catch (error) {
-            logger.error("Error al reemplazar productos del carrito")
-            console.error(error);
+            logger.error(`Error al reemplazar productos del carrito: ${error.message}\n${error.stack}`);
         }
     }
 
@@ -81,9 +80,10 @@ class CartRepository {
             rompete
             logger.info("en addProductToCart de cartRepository");
             const carrito = await this.getCartById(cid);
-            console.log("carrito: ", carrito);
+            logger.info(`carrito: ${JSON.stringify(carrito, null, 2)}`)
             const existeProd = carrito.products.find(item => item.product._id.toString() === pid);
-            console.log("existeProd: ", existeProd);
+            logger.info(`existeProd: ${JSON.stringify(existeProd, null, 2)}`)
+
             if (existeProd) {
                 existeProd.quantity += quantity;
             } else {
@@ -93,8 +93,7 @@ class CartRepository {
             carrito.markModified("products");
             return await this.updateCart(carrito);
         } catch (error) {
-            logger.error("Error al agregar producto al carrito")
-            console.error(error);
+            logger.error(`Error al agregar producto al carrito: ${error.message}\n${error.stack}`);
         }
     }
 }

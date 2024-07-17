@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
 const UserManager = require("../dao/controllers/UserManager.js");
+const { logger } = require('../utils/config_logger.js');
 
 const userManager = new UserManager();
 
@@ -26,7 +27,7 @@ router.post('/logout', (req, res) => {
 
 // Ruta para GitHub
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => {
-    console.log("en la ruta de git");
+    logger.info("en la ruta de git");
 });
 
 // Ruta para el callback de GitHub

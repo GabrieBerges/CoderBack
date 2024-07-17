@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const { ProductService } = require("../../services/index.js");
+const { logger } = require('../../utils/config_logger.js');
 
 class ProductManager {
   constructor(path) {
@@ -9,12 +10,12 @@ class ProductManager {
   async addProduct({title, description, price, img, code, stock, category, thumbnails}) {
     try {
       if (!title || !description || !price || !code || !stock || !category) {
-        console.log("No todos los campos contienen un valor");
+        logger.info("No todos los campos contienen un valor");
         return;
       }
 
       if(await ProductService.getProductByCode(code)) {
-        console.log("El código ya existe");
+        logger.info("El código ya existe");
         return;
       }
 
@@ -32,7 +33,7 @@ class ProductManager {
 
       return await ProductService.addProduct(productData);
     } catch (error) {
-      console.log("Error al agregar el nuevo producto", error);
+      logger.error(`Error al agregar el nuevo producto: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -40,7 +41,7 @@ class ProductManager {
     try {
       return await ProductService.getProducts();
     } catch (error) {
-      console.log("Error al recuperar los productos", error);
+      logger.error(`Error al recuperar los productos: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -48,7 +49,7 @@ class ProductManager {
     try {
       return await ProductService.getProductById(id);
     } catch (error) {
-      console.log("Error al recuperar el producto indicado", error);
+      logger.error(`Error al recuperar el producto indicado: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -56,7 +57,7 @@ class ProductManager {
     try {
       return await ProductService.updateProduct(id, updatedProduct);
     } catch (error) {
-      console.log("Producto no encontrado", error);
+      logger.error(`Producto no encontrado: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -64,7 +65,7 @@ class ProductManager {
     try {
       return await ProductService.deleteProduct(id);
     } catch (error) {
-      console.log("Producto no encontrado", error);
+      logger.error(`Producto no encontrado: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -97,7 +98,7 @@ class ProductManager {
         }
       };
     } catch (error) {
-      console.log("Error al paginar los productos", error);
+      logger.error(`Error al paginar los productos: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -111,25 +112,26 @@ class ProductManager {
       const payload = products;
       res.render("home", { payload });
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleGetProducts: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
 
   async handleGetProductById(req, res) {
     const pid = req.params.pid;
-    console.log("product_id: " + pid);
+    logger.info(`product_id: ${pid}`);
+    
     try {
       const product = await this.getProductById(pid);
-      console.log("product:");
-      console.log(product);
+      logger.info(`product: ${JSON.stringify(product, null, 2)}`)
+
       if (product) {
         res.send({ product });
       } else {
         res.send("Producto no encontrado");
       }
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleGetProductById: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -144,7 +146,7 @@ class ProductManager {
         res.send("Producto no creado");
       }
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleAddProduct: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -160,7 +162,7 @@ class ProductManager {
         res.send("Producto no encontrado");
       }
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleUpdateProduct: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -175,7 +177,7 @@ class ProductManager {
         res.send("Producto no encontrado");
       }
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleDeleteProduct: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }

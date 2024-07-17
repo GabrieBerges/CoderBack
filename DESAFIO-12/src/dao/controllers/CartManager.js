@@ -2,6 +2,7 @@
 const fs = require("fs").promises;
 const CartModel = require("../models/cart.model.js");
 const { CartService } = require("../../services/index.js");
+const { logger } = require('../../utils/config_logger.js');
 
 class CartManager {
   constructor() {
@@ -13,7 +14,7 @@ class CartManager {
     try {
       return CartService.createCart();
     } catch (error) {
-      console.error("Error al crear el carrito", error);
+      logger.error(`Error al crear el carrito: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -21,43 +22,13 @@ class CartManager {
     try {
       return await CartService.getCartById(cid);
     } catch (error) {
-      console.error("Error al obtener el carrito indicado ", error);
+      logger.error(`Error al obtener el carrito indicado: ${error.message}\n${error.stack}`);
     }
   }
-
-  // async addProductToCart(cid, pid, quantity = 1) {
-  //   try {
-  //     const carrito = await CartService.getCartById(cid);
-  //     const existeProd = carrito.products.find(item => item.product.toString() === pid);
-
-  //     if (existeProd) {
-  //       existeProd.quantity += quantity;
-  //     } else {
-  //       carrito.products.push({ product: pid, quantity });
-  //     }
-
-  //     carrito.markModified("products");
-  //     return await CartService.updateCart(carrito);
-  //   } catch (error) {
-  //     console.error("Error al agregar producto al carrito ", error);
-  //   }
-  // }
 
   async deleteProductCart(cid, pid) {
     return await CartService.deleteProductFromCart(cid,pid);
   }
-
-  // async replaceProductsCart(cid, body) {
-  //   try {
-  //     await CartService.clearCart(cid);
-  //     for (const product of body) {
-  //       await this.addProductToCart(cid, product.product, product.quantity);
-  //     }
-  //     return await CartService.getCartById(cid);
-  //   } catch (error) {
-  //     console.error("Error al reemplazar productos del carrito ", error);
-  //   }
-  // }
 
   async updateProductCart(cid, pid, quantity = 1) {
     try {
@@ -68,14 +39,14 @@ class CartManager {
       if (existeProd) {
         existeProd.quantity = quantity;
       } else {
-        console.log("No se encontró un producto con ese Id en el carrito");
+        logger.info("No se encontró un producto con ese Id en el carrito");
         return;
       }
 
       carrito.markModified("products");
       return await CartService.updateCart(carrito);
     } catch (error) {
-      console.error("Error al actualizar producto del carrito ", error);
+      logger.error(`Error al actualizar producto del carrito: ${error.message}\n${error.stack}`);
     }
   }
 
@@ -85,7 +56,7 @@ class CartManager {
       const newCart = await this.newCarts();
       res.status(201).json(newCart);
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleNewCarts: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -99,11 +70,13 @@ class CartManager {
         product: item.product.toObject(),
         quantity: item.quantity
       }));
-      console.log("products antes de cart.handl: ", products);
-      console.log("email: ", email);
+
+      logger.info(`products antes de cart.handl: ${JSON.stringify(products, null, 2)}`)
+      logger.info(`email: ${email}`);
+
       res.render("cart", { cId, email, products });
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleGetCartById: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -114,10 +87,10 @@ class CartManager {
     const quantity = parseInt(req.body.quantity) || 1;
     try {
       const cartActualized = await CartService.addProductToCart(cid, pid, quantity);
-      // res.status(201).json(cartActualized.products);
-      console.log("Producto agregado", cartActualized.products);
+      logger.info(`Producto agregado: ${JSON.stringify(cartActualized.products, null, 2)}`)
+
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleAddProductToCart: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -129,7 +102,7 @@ class CartManager {
       const cartActualized = await this.deleteProductCart(cid, pid);
       res.status(201).json(cartActualized.products);
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleDeleteProductCart: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -141,7 +114,7 @@ class CartManager {
       const cartActualized = await CartService.replaceProductsCart(cid, body);
       res.status(201).json(cartActualized.products);
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleReplaceProductsCart: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -154,7 +127,7 @@ class CartManager {
       const cartActualized = await this.updateProductCart(cid, pid, quantity);
       res.status(201).json(cartActualized.products);
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleUpdateProductCart: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }
@@ -165,7 +138,7 @@ class CartManager {
       const cartActualized = await CartService.clearCart(cid);
       res.status(201).json(cartActualized.products);
     } catch (error) {
-      console.log(error);
+      logger.error(`Error en handleClearCart: ${error.message}\n${error.stack}`);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   }

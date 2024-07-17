@@ -18,6 +18,8 @@ const cartManager = new CartManager("./src/dao/models/carts.json");
 //para traer los valores del .env
 const configObject = require("./config.js");
 
+const { logger } = require('../utils/config_logger.js');
+
 //1)
 const LocalStrategy = local.Strategy;
 
@@ -30,7 +32,7 @@ const initializePassport = () => {
         usernameField: "email"
     }, async (req, email, password, done) => {
         
-        console.log("EN EL REGISTER PASSPORT");
+        logger.info("EN EL REGISTER PASSPORT");
         const { first_name, last_name, age } = req.body;
         try {
             //verificar que no estpen vacío los campos
@@ -41,17 +43,16 @@ const initializePassport = () => {
             let user = await UsuarioModel.findOne({ email });
             
             if (user) {
-                console.log("dentro del if - el mail ya existe");
+                logger.info("dentro del if - el mail ya existe");
                 return done(null, false, { message: "El usuario ya existe" });
             }
             
             let role = "usuario"
             // defino el rol admin para el usuario admin
             if (email === configObject.admin_user && password === configObject.admin_password) {
-                console.log("defino el rol admin para el usuario correspondiente");
+                logger.info("defino el rol admin para el usuario correspondiente");
                 role = 'admin';
             }
-            
             const newCart = await cartManager.newCarts();
             const cart = newCart._id;
             
@@ -71,7 +72,7 @@ const initializePassport = () => {
             return done(null, result);
             //Si todo resulta bien, podemos mandar done con el usuario generado. 
         } catch (error) {
-            console.log("Error durante el registro:", error);
+            logger.error(`Error durante el registro: ${error.message}\n${error.stack}`);
             return done(error);
         }
     }))
@@ -80,14 +81,15 @@ const initializePassport = () => {
     passport.use("login", new LocalStrategy({
         usernameField: "email"
     }, async (email, password, done) => {
-        console.log("email: " + email);
-        console.log("password: " + password);
+
+        logger.info(`email: ${email}`);
+        logger.info(`password: ${password}`)
         try {
             //Verifico si existe un usuario con ese email: 
             let user = await UsuarioModel.findOne({ email });
-            console.log(user);
+            logger.info(`user: ${JSON.stringify(user, null, 2)}`)
             if (!user) {
-                console.log("Este usuario no existe");
+                logger.info("Este usuario no existe");
                 return done(null, false, { message: "Usuario no encontrado" });
             }
 
@@ -95,12 +97,12 @@ const initializePassport = () => {
             if (!isValidPassword(password, user)) {
                 return done(null, false, { message: "Contraseña incorrecta" });
             }
-            console.log("antes del done");
+            logger.info("antes del done");
             return done(null, user);
 
 
         } catch (error) {
-            console.log(error);
+            logger.error(`Error durante el login: ${error.message}\n${error.stack}`);
             return done(error);
         }
     }))
@@ -115,17 +117,18 @@ const initializePassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         
         //Veo los datos del perfil
-        console.log("Profile:", profile);
+        logger.info(`Profile: ${JSON.stringify(profile, null, 2)}`)
 
         const newCart = await cartManager.newCarts();
         const cart = newCart._id;
 
         try {
             let user = await UsuarioModel.findOne({ email: profile._json.email });
-            console.log("user:", user);
+            logger.info(`user: ${JSON.stringify(user, null, 2)}`)
+            user = null
             if (!user) {
-                console.log("hay que crear uno nuevo");
-                console.log("login: " + profile._json.login);
+                logger.info("hay que crear uno nuevo");
+                logger.info(`login: ${profile._json.login}`);
                 let newUser = {
                     first_name: profile.displayName,
                     last_name: profile.username,
@@ -135,17 +138,16 @@ const initializePassport = () => {
                     cart,
                     role: "usuario"
                 }
-                console.log(newUser);
+                logger.info(`newUser: ${JSON.stringify(newUser, null, 2)}`)
 
                 let result = await UsuarioModel.create(newUser);
-                console.log("hasta acá no llega");
+
                 done(null, result);
             } else {
                 done(null, user);
             }
         } catch (error) {
-            console.log("en catch del passport git");
-            console.log(error);
+            logger.error(`Error durante el passport de github: ${error.message}\n${error.stack}`);
             return done(error);
         }
     }))
@@ -153,7 +155,7 @@ const initializePassport = () => {
     //Serializar y deserializar: 
 
     passport.serializeUser((user, done) => {
-        console.log("Serializing user:", user);
+        logger.info(`Serializing user: ${JSON.stringify(user, null, 2)}`)
         done(null, user._id);
     });
 

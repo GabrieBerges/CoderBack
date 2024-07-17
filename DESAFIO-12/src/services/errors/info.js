@@ -1,5 +1,7 @@
+const { logger } = require('../../utils/config_logger.js');
+
 const generarInfoError = (product) => {
-    console.log("Producto recibido para generar info de error:", product);
+    logger.info(`Producto recibido para generar info de error: ${JSON.stringify(product, null, 2)}`);
     
     return `Los datos estan incompletos o no son validos. 
     Necesitamos recibir los siguientes datos:

@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const passport = require("passport");
 const configObject = require("../../config/config.js");
 const { v4: uuidv4 } = require('uuid');
+const { logger } = require('../../utils/config_logger.js');
 
 const { TicketService } = require("../../services/index.js");
 const { CartService } = require("../../services/index.js");
@@ -25,21 +26,21 @@ class TicketManager {
         try {
             return await TicketService.getTicketByCode(code);
         } catch (error) {
-            console.log('Error obteniendo el ticket');
+            logger.error(`Error obteniendo el ticket: ${error.message}\n${error.stack}`);
         }
     }
 
     async handlePurchase(req, res) {
-        console.log("Gestionando la compra del carrito");
+        logger.info("Gestionando la compra del carrito");
         const cid = req.params.cid;
         const email = req.query.email;
-        console.log("cid: ", cid);
-        console.log("email: ", email);
+        logger.info(`cid: ${cid}`);
+        logger.info(`email: ${email}`);
         
         try {
             const cart = await CartService.getCartById(cid);
             const products = cart.products;
-            console.log("products del cart: ", products);
+            logger.info(`products del cart: ${JSON.stringify(products, null, 2)}`)
 
             const purchasedProducts = [];
             const notPurchasedProducts = [];
@@ -48,13 +49,13 @@ class TicketManager {
             // Por producto hay que chequear que tenga stock
             for (const element of products) {
                 const product = await ProductService.getProductById(element.product._id);
-                console.log("product: ", product);
+                logger.info(`product: ${JSON.stringify(product, null, 2)}`)
 
                 // - - Si tiene stock hay que: 
                 if (product.stock >= element.quantity) {
                     // - - - se suma el precio a la cantidad total de la compra
                     purchase_total += product.price * element.quantity;
-                    console.log("purchase_total: ", purchase_total);
+                    logger.info(`purchase_total: ${purchase_total}`);
                     
                     // - - - descontarle la cantidad al stock del producto en mongo
                     product.stock -= element.quantity;
@@ -68,7 +69,7 @@ class TicketManager {
                 }
             }
 
-            console.log(email);
+            logger.info(`email: ${email}`);
 
             
             let resume = {};
@@ -93,7 +94,8 @@ class TicketManager {
             // Responder con el resultado de la compra
             if (notPurchasedProducts.length > 0) {
                 const cartUpdated = await CartService.replaceProductsCart(cid,notPurchasedProducts);
-                console.log("cartUpdated: ", cartUpdated);
+                logger.info(`cartUpdated: ${JSON.stringify(cartUpdated, null, 2)}`)
+
                 const productsId = cartUpdated.products.map(item => item.product._id.toString());
                 resume = {
                     status: "Compra parcial",
@@ -105,7 +107,8 @@ class TicketManager {
                 
             } else {
                 const cartEmpty = await CartService.clearCart(cid);
-                console.log("cartEmpty: ", cartEmpty);
+                logger.info(`cartEmpty: ${JSON.stringify(cartEmpty, null, 2)}`)
+
                 resume = {
                     status: "Compra completa",
                     ticket,
@@ -117,7 +120,7 @@ class TicketManager {
             res.render("ticket", { resume });
 
         } catch (error) {
-            console.error("Error gestionando la compra del carrito:", error);
+            logger.error(`Error gestionando la compra del carrito:: ${error.message}\n${error.stack}`);
             res.status(500).json({ error: "Error gestionando la compra del carrito" });
         }
 
@@ -126,7 +129,7 @@ class TicketManager {
     getCodeTicket() {
         // Genera un UUID
         const ticketCode = uuidv4();
-        console.log("ticketCode: ",ticketCode);
+        logger.info(`ticketCode: ${ticketCode}`)
         return ticketCode;
     }
 

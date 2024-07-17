@@ -1,8 +1,10 @@
 const { EErrors } = require("../services/errors/enum.js");
+const { logger } = require('../utils/config_logger.js');
 
 const manejadorError = (error, req, res, next) => {
 
-    console.log(error.causa); 
+    console.log(error.causa);
+    logger.info(`error.causa: ${JSON.stringify(error.causa, null, 2)}`)
 
     switch(error.code) {
 

@@ -7,6 +7,7 @@ const ProductModel = require("../dao/models/product.model.js");
 const cartModel = require("../dao/models/cart.model.js");
 const productManager = new ProductManager("./src/dao/models/products.json");
 const { mockingProducts } = require("../utils/util.js");
+const { logger } = require('../utils/config_logger.js');
 
 // Middleware para controlar acceso a rutas 
 const { checkSessionAdmin, checkSessionUser } = require("../middleware/current-session.js");
@@ -15,7 +16,7 @@ const { checkSessionAdmin, checkSessionUser } = require("../middleware/current-s
 // Ruta inicial, redirige a la ruta /products de este mismo archivo
 router.get('/', async (req, res) => {
     try {
-        req.logger.info("en home /");
+        logger.info("en home /");
         if (req.session.user) {
             return res.redirect('/products');
         }
@@ -29,7 +30,7 @@ router.get('/', async (req, res) => {
 // Ruta para el registro
 router.get('/register', (req, res) => {
     try {
-        req.logger.info("/register");
+        logger.info("/register");
         const error = req.session.error;
         delete req.session.error;  // Eliminar mensaje de error de la sesión
         res.render('register', { error });  // Pasar mensaje de error a la vista
@@ -65,8 +66,7 @@ router.get('/products', checkSessionUser, async (req, res) => {
 
     try {
         const { products, pagination, user } = await productManager.getPaginatedProducts(page, limit, req.session.user);
-        // console.log("user: ", req.session.user);
-        // console.log(products);
+
         res.render("products", {
             status: 200,
             payload: products,
@@ -85,7 +85,7 @@ router.get('/products', checkSessionUser, async (req, res) => {
             cart: req.session.user.cart
         });
     } catch (error) {
-        console.log(error);
+        logger.error(`Error en /products: ${error.message}\n${error.stack}`);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 });
@@ -94,14 +94,15 @@ router.get('/products', checkSessionUser, async (req, res) => {
 // Ruta para ver los productos mockeados
 router.get("/mockingproducts", (req, res) => {
     try {
-        req.logger.info("en mockingProducts");
+        logger.info("en mockingProducts");
         const products = [];
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 5; i++) {
             products.push(mockingProducts());
         }
+        logger.error(`Products: ${JSON.stringify(products, null, 2)}`);
         res.send(products);
     } catch (error) {
-        console.log("Error: ", error);
+        logger.error(`Error en /mockingproducts: ${error.message}\n${error.stack}`);
     }
 })
 

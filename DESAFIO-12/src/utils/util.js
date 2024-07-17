@@ -3,9 +3,11 @@ const CustomError = require("../services/errors/custom-error.js");
 const EErrors = require("../services/errors/enum.js");
 const generarInfoError = require("../services/errors/info.js");
 const {faker} = require("@faker-js/faker");
+const { logger } = require('./config_logger.js');
 
 const verifProduct = (productData) => {
-    console.log(productData);
+
+    logger.info(`productData: ${JSON.stringify(productData, null, 2)}`)
 
     try {
         if (!productData['title'] || !productData['description'] || !productData['code'] || !productData['category']) {
@@ -23,7 +25,7 @@ const verifProduct = (productData) => {
                 productData['stock'] = Number(productData['stock']);
                 
             } catch (error) {
-                console.log("no se pudo: ", error);
+                logger.error(`Error, no se pudo: ${error.message}\n${error.stack}`);
                 throw CustomError.crearError({
                     nombre: "Producto nuevo con precio/stock incorrecto/s",
                     causa: generarInfoError(productData),
@@ -44,7 +46,7 @@ const verifProduct = (productData) => {
         
         return true;
     } catch (error) {
-        console.log(error);
+        logger.error(`Error: ${error.message}\n${error.stack}`);
     }
 }
 

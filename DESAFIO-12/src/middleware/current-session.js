@@ -1,8 +1,8 @@
-const { logger } = require('../utils/config_logger');
+const { logger } = require('../utils/config_logger.js');
 
 const checkSessionAdmin = (req, res, next) => {
     logger.info("en checkSession");
-    console.log(req.session.user);
+    logger.info(`req.session.user: ${JSON.stringify(req.session.user, null, 2)}`)
     if (req.session.user) {
         if (req.session.user.role === "usuario") {
             return res.redirect('/products');
@@ -15,7 +15,7 @@ const checkSessionAdmin = (req, res, next) => {
 
 const checkSessionUser = (req, res, next) => {
     logger.info("en checkSessionUser");
-    console.log(req.session.user);
+    logger.info(`req.session.user: ${JSON.stringify(req.session.user, null, 2)}`)
     if (req.session.user) {
         if (req.session.user.role === "admin") {
             return res.redirect('/realtimeproducts');

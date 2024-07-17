@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const passport = require("passport");
 const configObject = require("../../config/config.js");
+const { logger } = require('../../utils/config_logger.js');
 
 const { UserService } = require("../../services/index.js");
 
@@ -21,7 +22,7 @@ class UserManager {
         try {
             return await UserService.getUserByEmail({ email });
         } catch (error) {
-            console.log('Error obteniendo el usuario');
+            logger.info('Error obteniendo el usuario');
         }
     }
 
@@ -44,7 +45,7 @@ class UserManager {
 
             return  { email: user.email, role: user.role };
         } catch (error) {
-            console.error('Error autenticando al usuario:', error);
+            logger.error(`Error autenticando al usuario: ${error.message}\n${error.stack}`);
             return null;
         }
     }
@@ -68,12 +69,11 @@ class UserManager {
     }
 
     async login(req, res) {
-        console.log("en user/login");
-        console.log(req.user);
+        logger.info("en user/login");
+        logger.info(`req.user: ${JSON.stringify(req.user, null, 2)}`)
         if (!req.user) {
             return res.status(400).send("Credenciales invalidas");
         }
-        console.log(req.user);
         req.session.user = {
             first_name: req.user.first_name,
             last_name: req.user.last_name,
@@ -84,8 +84,9 @@ class UserManager {
 
         req.session.login = true;
 
-        console.log(req.session.user);
-        console.log(req.session.login);
+        logger.info(`req.session.user: ${JSON.stringify(req.session.user, null, 2)}`)
+        logger.info(`req.session.login: ${JSON.stringify(req.session.login, null, 2)}`)
+
         res.redirect("/products");
         // res.redirect("/api/sessions/current");
     }
@@ -93,7 +94,7 @@ class UserManager {
     logout(req, res) {
         req.session.destroy((err) => {
             if (err) {
-                console.error('Error destroying session:', err);
+                logger.error(`Error destroying session: ${err.message}\n${err.stack}`);
                 res.status(500).send('Error destroying session');
             } else {
                 res.redirect('/'); 

@@ -2,17 +2,18 @@ const ProductModel = require('../dao/models/product.model.js');
 const CustomError = require("../services/errors/custom-error.js");
 const EErrors = require("../services/errors/enum.js");
 const generarInfoError = require("../services/errors/info.js");
-const { logger } = require('../utils/config_logger');
+const { logger } = require('../utils/config_logger.js');
 
 class ProductRepository {
     async addProduct(productData) {
         try {
-            console.log("productData: ", productData);
+            logger.info(`productData: ${JSON.stringify(productData, null, 2)}`)
+            logger.info(`productData.code: ${JSON.stringify(productData.code, null, 2)}`)
             
-            console.log("productData.code: ", productData.code);
             //primero nos aseguramos de que no exista el código
             const result = await this.getProductByCode(productData.code);
-            console.log("result: ", result);
+
+            logger.info(`result: ${JSON.stringify(result, null, 2)}`)
 
             if (result) {
                 throw CustomError.crearError({
@@ -41,7 +42,7 @@ class ProductRepository {
 
     async getProductById(id) {
         try {
-            console.log("dentro de productById. id recibido: ", id);
+            logger.info(`dentro de productById. id recibido: ${id}`);
             const product = await ProductModel.findById(id).lean();
             return product
         } catch (error) {
@@ -51,10 +52,10 @@ class ProductRepository {
 
     async getProductByCode(code) {
         try {
-            console.log("code: ", code);
+            logger.info(`code: ${code}`);
             return await ProductModel.findOne({ code: code });
         } catch (error) {
-            console.error("Error al recuperar el producto indicado", error);
+            logger.error(`Error al recuperar el producto indicado: ${error.message}\n${error.stack}`);
             throw new Error("Error al recuperar el producto indicado");
         }
     }

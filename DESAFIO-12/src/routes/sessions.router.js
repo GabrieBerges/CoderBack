@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router(); 
 const passport = require("passport");
 const UserDTO = require("../dto/user.dto.js"); 
+const { logger } = require('../utils/config_logger.js');
 
 
 //Perfil: 
 router.get("/current", (req, res) => {
     try {
-        console.log(req.session.user);
+        logger.info(`req.session.user: ${JSON.stringify(req.session.user, null, 2)}`)
         if (req.session.user)
         {
             const usuario = req.session.user;

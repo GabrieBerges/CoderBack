@@ -1,7 +1,7 @@
 //ESTE ES EL LADO CLIENTE
 
 const socket = io();
-
+const { logger } = require('../../utils/config_logger.js');
 
 // // el evento "mensaje" se debe respetar en el socket.on en app.js (el lado del servidor)
 // socket.emit("mensaje", "Hola mundo, te escribo desde el cliente");
@@ -36,7 +36,7 @@ const renderProductos = (products) => {
 }
 
 const eliminarProducto = (id) => {
-    console.log("eliminando");
+    logger.info("eliminando");
     socket.emit("eliminarProducto", id);
 }
 
@@ -45,7 +45,7 @@ document.getElementById("btnEnviar").addEventListener("click", () => {
 })
 
 const agregarProducto = () => {
-    console.log("dentro de agregarProducto en main.js");
+    logger.info("dentro de agregarProducto en main.js");
     const product = {
         title: document.getElementById("title").value,
         description: document.getElementById("description").value,
@@ -56,6 +56,6 @@ const agregarProducto = () => {
         category: document.getElementById("category").value,
         thumbnail: document.getElementById("thumbnail").value
     }
-    console.log("product en main.js: ", product);
+    logger.info(`product en main.js: ${JSON.stringify(product, null, 2)}`)
     socket.emit("agregarProducto", product);
 }
