@@ -77,7 +77,6 @@ class CartRepository {
 
     async addProductToCart(cid, pid, quantity = 1) {
         try {
-            rompete
             logger.info("en addProductToCart de cartRepository");
             const carrito = await this.getCartById(cid);
             logger.info(`carrito: ${JSON.stringify(carrito, null, 2)}`)
